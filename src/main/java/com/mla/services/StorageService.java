@@ -22,7 +22,7 @@ package com.mla.services;
 public class StorageService {
 
     Logger log = LoggerFactory.getLogger(this.getClass().getName());
-    private final Path rootLocation = Paths.get("/home/rnallamothu/");
+    private final Path rootLocation = Paths.get("/opt");
 
     public void store(MultipartFile file) {
         try {
