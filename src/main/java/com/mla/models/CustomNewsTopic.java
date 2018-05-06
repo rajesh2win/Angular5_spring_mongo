@@ -1,30 +1,23 @@
 package com.mla.models;
+
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.Document;
-import org.springframework.data.mongodb.core.index.Indexed;
-
 
 /**
  * Created by rnallamothu on 4/15/18.
  */
-@Document(collection = "topics")
-public class Topic {
+@Document(collection = "newstopics")
+public class CustomNewsTopic {
     @Id
     String id;
-
     String topicName;
+    String imageUrl;
 
-    String topicDetails;
-
-    public Topic(String id, String topicName, String topicDetails) {
+    public CustomNewsTopic(String id, String topicName, String topicDetails) {
         this.id = id;
         this.topicName = topicName;
-        this.topicDetails = topicDetails;
     }
 
-    public Topic(){
-
-    }
     public String getId() {
         return id;
     }
@@ -41,11 +34,15 @@ public class Topic {
         this.topicName = topicName;
     }
 
-    public String getTopicDetails() {
-        return topicDetails;
+
+    public String getImageUrl() {
+        return imageUrl;
     }
 
-    public void setTopicDetails(String topicDetails) {
-        this.topicDetails = topicDetails;
+    public void setImageUrl(String imageUrl) {
+        this.imageUrl = imageUrl;
     }
+
+
+
 }

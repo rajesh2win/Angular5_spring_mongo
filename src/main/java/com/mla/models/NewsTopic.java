@@ -2,7 +2,7 @@ package com.mla.models;
 
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.Document;
-
+import java.util.Date;
 /**
  * Created by rnallamothu on 4/15/18.
  */
@@ -13,11 +13,13 @@ public class NewsTopic {
     String topicName;
     String topicDetails;
     String imageUrl;
+    Date  createdDate ;
 
-    public NewsTopic(String id, String topicName, String topicDetails) {
+    public NewsTopic(String id, String topicName, String topicDetails,Date createdDate) {
         this.id = id;
         this.topicName = topicName;
         this.topicDetails = topicDetails;
+        this.createdDate  = createdDate;
     }
 
     public NewsTopic() {
@@ -56,6 +58,12 @@ public class NewsTopic {
         this.imageUrl = imageUrl;
     }
 
+    public Date getCreatedDate() {
+        return createdDate;
+    }
 
+    public void setCreatedDate(Date createdDate) {
+        this.createdDate = createdDate;
+    }
 
 }

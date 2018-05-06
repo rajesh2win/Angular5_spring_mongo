@@ -1,7 +1,10 @@
 package com.mla.controllers;
 
 import com.mla.models.Topic;
+import com.mla.models.NewsTopic;
 import com.mla.repositories.TopicRepository;
+import com.mla.repositories.CustomTopicRepository;
+import com.mla.repositories.TopicImageRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -22,6 +25,12 @@ public class TopicController {
     @Autowired
     TopicRepository topicRepository;
 
+    @Autowired
+    CustomTopicRepository customTopicRepository;
+
+    @Autowired
+    TopicImageRepository topicImageRepository;
+
     @RequestMapping(method= RequestMethod.GET, value="/topics")
     public Iterable<Topic> topic() {
         return topicRepository.findAll();
@@ -36,6 +45,16 @@ public class TopicController {
     @RequestMapping(method=RequestMethod.GET, value="/topics/{id}")
     public Optional<Topic> show(@PathVariable String id) {
         return topicRepository.findById(id);
+    }
+
+    @RequestMapping(method=RequestMethod.GET, value="/topics/topicimagename/{topicName}")
+    public Optional<NewsTopic> showNames(@PathVariable String topicName) {
+        return topicImageRepository.findByTopicName(topicName);
+    }
+
+    @RequestMapping(method=RequestMethod.GET, value="/topics/topicname/{topicName}")
+    public Optional<Topic> showTopicWithImageNames(@PathVariable String topicName) {
+        return customTopicRepository.findByTopicName(topicName);
     }
 
     @RequestMapping(method=RequestMethod.PUT, value="/topics/{id}")
