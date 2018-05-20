@@ -2,8 +2,8 @@
 package com.mla.controllers;
 
 import java.util.Optional;
-import com.mla.models.Feedback;
-import com.mla.repositories.FeedbackRepository;
+import com.mla.models.Mandal1;
+import com.mla.repositories.Mandal1Repository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -21,32 +21,31 @@ import java.util.Optional;
  */
 @RestController
 @CrossOrigin(origins = {"http://35.200.168.104:8080", "http://localhost:4200","http://localhost:3200"})
-public class FeedbackController {
+public class Mandal1Controller {
     @Autowired
-    FeedbackRepository topicRepository;
+    Mandal1Repository topicRepository;
 
-
-    @RequestMapping(method = RequestMethod.GET, value = "/feedback")
-    public Iterable<Feedback> topic() {
+    @RequestMapping(method = RequestMethod.GET, value = "/mandal1")
+    public Iterable<Mandal1> topic() {
         return topicRepository.findAll();
     }
 
-    @RequestMapping(method = RequestMethod.POST, value = "/feedback")
-    public Feedback save(@RequestBody Feedback topic) {
+
+    @RequestMapping(method = RequestMethod.POST, value = "/mandal1")
+    public Mandal1 save(@RequestBody Mandal1 topic) {
         topicRepository.save(topic);
         return topic;
     }
 
-    @RequestMapping(method = RequestMethod.GET, value = "/feedback/{id}")
-    public Optional<Feedback> show(@PathVariable String id) {
+    @RequestMapping(method = RequestMethod.GET, value = "/mandal1/{id}")
+    public Optional<Mandal1> show(@PathVariable String id) {
         return topicRepository.findById(id);
     }
 
-
-    @RequestMapping(method = RequestMethod.PUT, value = "/feedback/{id}")
-    public Feedback update(@PathVariable String id, @RequestBody Feedback topic) {
-        Optional<Feedback> optcontact = topicRepository.findById(id);
-        Feedback t = optcontact.get();
+    @RequestMapping(method = RequestMethod.PUT, value = "/mandal1/{id}")
+    public Mandal1 update(@PathVariable String id, @RequestBody Mandal1 topic) {
+        Optional<Mandal1> optcontact = topicRepository.findById(id);
+        Mandal1 t = optcontact.get();
         if (topic.getTopicName() != null)
             t.setTopicName(topic.getTopicName());
         if (topic.getTopicDetails() != null)
@@ -58,10 +57,10 @@ public class FeedbackController {
         return t;
     }
 
-    @RequestMapping(method = RequestMethod.DELETE, value = "/feedback/{id}")
+    @RequestMapping(method = RequestMethod.DELETE, value = "/mandal1/{id}")
     public String delete(@PathVariable String id) {
-        Optional<Feedback> optTopic = topicRepository.findById(id);
-        Feedback topic = optTopic.get();
+        Optional<Mandal1> optTopic = topicRepository.findById(id);
+        Mandal1 topic = optTopic.get();
         topicRepository.delete(topic);
 
         return "";

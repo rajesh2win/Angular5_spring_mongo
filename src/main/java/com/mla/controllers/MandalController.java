@@ -2,8 +2,10 @@
 package com.mla.controllers;
 
 import java.util.Optional;
-import com.mla.models.Feedback;
-import com.mla.repositories.FeedbackRepository;
+import com.mla.models.Mandal1;
+import com.mla.models.Mandal;
+import com.mla.repositories.MandalRepository;
+import com.mla.repositories.Mandal1Repository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -21,32 +23,35 @@ import java.util.Optional;
  */
 @RestController
 @CrossOrigin(origins = {"http://35.200.168.104:8080", "http://localhost:4200","http://localhost:3200"})
-public class FeedbackController {
+public class MandalController {
     @Autowired
-    FeedbackRepository topicRepository;
+    MandalRepository topicRepository;
 
+    @Autowired
+    Mandal1Repository topicRepository1;
 
-    @RequestMapping(method = RequestMethod.GET, value = "/feedback")
-    public Iterable<Feedback> topic() {
+    @RequestMapping(method = RequestMethod.GET, value = "/mandal")
+    public Iterable<Mandal> topic() {
         return topicRepository.findAll();
     }
 
-    @RequestMapping(method = RequestMethod.POST, value = "/feedback")
-    public Feedback save(@RequestBody Feedback topic) {
+
+    @RequestMapping(method = RequestMethod.POST, value = "/mandal")
+    public Mandal save(@RequestBody Mandal topic) {
         topicRepository.save(topic);
         return topic;
     }
 
-    @RequestMapping(method = RequestMethod.GET, value = "/feedback/{id}")
-    public Optional<Feedback> show(@PathVariable String id) {
+
+    @RequestMapping(method = RequestMethod.GET, value = "/mandal/{id}")
+    public Optional<Mandal> show(@PathVariable String id) {
         return topicRepository.findById(id);
     }
 
-
-    @RequestMapping(method = RequestMethod.PUT, value = "/feedback/{id}")
-    public Feedback update(@PathVariable String id, @RequestBody Feedback topic) {
-        Optional<Feedback> optcontact = topicRepository.findById(id);
-        Feedback t = optcontact.get();
+    @RequestMapping(method = RequestMethod.PUT, value = "/mandal/{id}")
+    public Mandal update(@PathVariable String id, @RequestBody Mandal topic) {
+        Optional<Mandal> optcontact = topicRepository.findById(id);
+        Mandal t = optcontact.get();
         if (topic.getTopicName() != null)
             t.setTopicName(topic.getTopicName());
         if (topic.getTopicDetails() != null)
@@ -58,10 +63,10 @@ public class FeedbackController {
         return t;
     }
 
-    @RequestMapping(method = RequestMethod.DELETE, value = "/feedback/{id}")
+    @RequestMapping(method = RequestMethod.DELETE, value = "/mandal/{id}")
     public String delete(@PathVariable String id) {
-        Optional<Feedback> optTopic = topicRepository.findById(id);
-        Feedback topic = optTopic.get();
+        Optional<Mandal> optTopic = topicRepository.findById(id);
+        Mandal topic = optTopic.get();
         topicRepository.delete(topic);
 
         return "";

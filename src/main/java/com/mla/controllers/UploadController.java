@@ -41,6 +41,23 @@ public class UploadController {
             return ResponseEntity.status(HttpStatus.OK).body(message);
         } catch (Exception e) {
             message = "FAIL to upload " + file.getOriginalFilename() + "!";
+            System.out.println(e);
+            return ResponseEntity.status(HttpStatus.EXPECTATION_FAILED).body(message);
+        }
+    }
+
+    @RequestMapping(method=RequestMethod.POST, value="/uploadPhotos")
+    public ResponseEntity<String> handlePhotoUpload(@RequestParam("file") MultipartFile file) {
+        String message = "";
+        try {
+            storageService.storePhotos(file);
+            files.add(file.getOriginalFilename());
+
+            message = "You successfully uploaded " + file.getOriginalFilename() + "!";
+            return ResponseEntity.status(HttpStatus.OK).body(message);
+        } catch (Exception e) {
+            message = "FAIL to upload " + file.getOriginalFilename() + "!";
+            System.out.println(e);
             return ResponseEntity.status(HttpStatus.EXPECTATION_FAILED).body(message);
         }
     }
@@ -61,6 +78,28 @@ public class UploadController {
     @ResponseBody
     public ResponseEntity<Resource> getFile(@PathVariable String filename) {
         Resource file = storageService.loadFile(filename);
+        return ResponseEntity.ok()
+                .header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=\"" + file.getFilename() + "\"")
+                .body(file);
+    }
+
+    @GetMapping("/getallphotos")
+    public ResponseEntity<List<String>> getListFiles() {
+        List<String> urls = storageService
+                .loadAll()
+                .map(path ->
+                        MvcUriComponentsBuilder
+                                .fromMethodName(UploadController.class, "getPhoto", path.getFileName().toString())
+                                .build().encode().toString())
+                .collect(Collectors.toList());
+
+        return ResponseEntity.ok().body(urls);
+    }
+
+    @GetMapping("/photos/{filename:.+}")
+    @ResponseBody
+    public ResponseEntity<Resource> getPhoto(@PathVariable String filename) {
+        Resource file = storageService.loadPhoto(filename);
         return ResponseEntity.ok()
                 .header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=\"" + file.getFilename() + "\"")
                 .body(file);
