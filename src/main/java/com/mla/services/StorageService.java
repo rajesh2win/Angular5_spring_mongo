@@ -24,6 +24,7 @@ public class StorageService {
     Logger log = LoggerFactory.getLogger(this.getClass().getName());
     private final Path rootLocation = Paths.get("/opt/");
     private final Path photosLocation = Paths.get("/opt/images");
+    private final Path videosLocation = Paths.get("/opt/videos");
 
 
     public void store(MultipartFile file) {
@@ -41,6 +42,15 @@ public class StorageService {
             throw new RuntimeException("Image with the same name already exists !");
         }
     }
+
+    public void storeVideos(MultipartFile file) {
+        try {
+            Files.copy(file.getInputStream(), this.videosLocation.resolve(file.getOriginalFilename()));
+        } catch (Exception e) {
+            throw new RuntimeException("Image with the same name already exists !");
+        }
+    }
+
     public Stream<Path> loadAll() {
         try {
             return Files.walk(this.photosLocation, 1)
@@ -52,6 +62,19 @@ public class StorageService {
         }
         return null;
     }
+
+    public Stream<Path> loadAllVideos() {
+        try {
+            return Files.walk(this.videosLocation, 1)
+                    .filter(path -> !path.equals(this.videosLocation))
+                    .filter(path -> !path.getFileName().toString().startsWith("."))
+                    .map(path -> this.videosLocation.relativize(path));
+        } catch (IOException e) {
+            //throw new StorageException("Failed to read stored files", e);
+        }
+        return null;
+    }
+
     public Resource loadFile(String filename) {
         try {
             Path file = rootLocation.resolve(filename);
@@ -78,6 +101,21 @@ public class StorageService {
             throw new RuntimeException("FAIL!");
         }
     }
+
+    public Resource loadVideo(String filename) {
+        try {
+            Path file = videosLocation.resolve(filename);
+            Resource resource = new UrlResource(file.toUri());
+            if (resource.exists() || resource.isReadable()) {
+                return resource;
+            } else {
+                throw new RuntimeException("FAIL!");
+            }
+        } catch (MalformedURLException e) {
+            throw new RuntimeException("FAIL!");
+        }
+    }
+
     public void deleteAll() {
         FileSystemUtils.deleteRecursively(rootLocation.toFile());
     }

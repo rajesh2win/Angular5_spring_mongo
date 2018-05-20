@@ -5,7 +5,9 @@ import java.util.Date;
 import java.util.Iterator;
 import java.util.Optional;
 import com.mla.models.CustomNewsTopic;
-
+import org.springframework.data.domain.Sort;
+import org.springframework.data.domain.Sort.Direction;
+import org.springframework.data.domain.Sort.Order;
 import com.mla.models.NewsTopic;
 import com.mla.repositories.NewsTopicRepository;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -33,7 +35,9 @@ public class NewsController {
 
     @RequestMapping(method = RequestMethod.GET, value = "/news")
     public Iterable<NewsTopic> topic() {
-        return newstopicRepository.findAll();
+        Query query = new Query();
+        query.with(new Sort(new Order(Direction.DESC, "createdDate")));
+        return mongoTemplate.find(query,NewsTopic.class);
     }
 
     @RequestMapping(method = RequestMethod.GET, value = "/news/list")

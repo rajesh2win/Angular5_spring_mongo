@@ -62,6 +62,22 @@ public class UploadController {
         }
     }
 
+    @RequestMapping(method=RequestMethod.POST, value="/uploadVideos")
+    public ResponseEntity<String> handleVideoUpload(@RequestParam("file") MultipartFile file) {
+        String message = "";
+        try {
+            storageService.storeVideos(file);
+            files.add(file.getOriginalFilename());
+
+            message = "You successfully uploaded " + file.getOriginalFilename() + "!";
+            return ResponseEntity.status(HttpStatus.OK).body(message);
+        } catch (Exception e) {
+            message = "FAIL to upload " + file.getOriginalFilename() + "!";
+            System.out.println(e);
+            return ResponseEntity.status(HttpStatus.EXPECTATION_FAILED).body(message);
+        }
+    }
+
     @GetMapping("/getallfiles/{filename:.+}")
     public ResponseEntity<List<String>> getListFiles(@PathVariable String filename) {
         files.clear();
@@ -96,10 +112,32 @@ public class UploadController {
         return ResponseEntity.ok().body(urls);
     }
 
+    @GetMapping("/getallvideos")
+    public ResponseEntity<List<String>> getVideoFiles() {
+        List<String> urls = storageService
+                .loadAllVideos()
+                .map(path ->
+                        MvcUriComponentsBuilder
+                                .fromMethodName(UploadController.class, "getVideo", path.getFileName().toString())
+                                .build().encode().toString())
+                .collect(Collectors.toList());
+
+        return ResponseEntity.ok().body(urls);
+    }
+
     @GetMapping("/photos/{filename:.+}")
     @ResponseBody
     public ResponseEntity<Resource> getPhoto(@PathVariable String filename) {
         Resource file = storageService.loadPhoto(filename);
+        return ResponseEntity.ok()
+                .header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=\"" + file.getFilename() + "\"")
+                .body(file);
+    }
+
+    @GetMapping("/videos/{filename:.+}")
+    @ResponseBody
+    public ResponseEntity<Resource> getVideo(@PathVariable String filename) {
+        Resource file = storageService.loadVideo(filename);
         return ResponseEntity.ok()
                 .header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=\"" + file.getFilename() + "\"")
                 .body(file);
