@@ -1,8 +1,10 @@
 
 package com.mla.controllers;
 
+import java.util.Iterator;
 import java.util.Optional;
 import com.mla.models.Work;
+import com.mla.repositories.CustomWorkRepository;
 import com.mla.repositories.WorkRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
@@ -11,6 +13,8 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
+import javax.servlet.http.HttpServletRequest;
+
 
 import java.util.Optional;
 
@@ -25,13 +29,24 @@ public class WorkController {
     @Autowired
     WorkRepository topicRepository;
 
+    @Autowired
+    CustomWorkRepository customWorkRepository;
+
+    String item1 ;
     @RequestMapping(method = RequestMethod.GET, value = "/work")
     public Iterable<Work> topic() {
         return topicRepository.findAll();
     }
 
+    @RequestMapping(method = RequestMethod.GET, value = "/works/{item}")
+    public Iterable<Work> getWorks(@PathVariable String item, HttpServletRequest request) {
+        item1 = item;
+        return customWorkRepository.findByItem(item);
+    }
+
     @RequestMapping(method = RequestMethod.POST, value = "/work")
-    public Work save(@RequestBody Work topic) {
+    public Work save(@RequestBody Work topic,HttpServletRequest request) {
+        topic.setItem(item1);
         topicRepository.save(topic);
         return topic;
     }
@@ -49,6 +64,8 @@ public class WorkController {
             t.setTopicName(topic.getTopicName());
         if (topic.getTopicDetails() != null)
             t.setTopicDetails(topic.getTopicDetails());
+        if (topic.getItem() != null)
+            t.setItem(topic.getItem());
         if (topic.getImageUrl() != null)
             t.setImageUrl(topic.getImageUrl());
 

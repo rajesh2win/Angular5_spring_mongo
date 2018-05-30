@@ -6,23 +6,21 @@ import org.springframework.data.mongodb.core.mapping.Document;
 /**
  * Created by rnallamothu on 4/15/18.
  */
-@Document(collection = "Work")
-public class Work {
+@Document(collection = "mandal5")
+public class Mandal5 {
     @Id
     String id;
     String topicName;
     String topicDetails;
     String imageUrl;
-    String item;
 
-    public Work(String id, String topicName, String topicDetails,String item) {
+    public Mandal5(String id, String topicName, String topicDetails) {
         this.id = id;
         this.topicName = topicName;
         this.topicDetails = topicDetails;
-        this.item = item;
     }
 
-    public Work() {
+    public Mandal5() {
 
     }
 
@@ -58,13 +56,6 @@ public class Work {
         this.imageUrl = imageUrl;
     }
 
-    public String getItem() {
-        return item;
-    }
-
-    public void setItem(String item) {
-        this.item = item;
-    }
 
 
 }

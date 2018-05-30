@@ -18,14 +18,27 @@ package com.mla.services;
         import org.springframework.util.FileSystemUtils;
         import org.springframework.web.multipart.MultipartFile;
         import java.util.stream.Stream;
+        import org.springframework.beans.factory.annotation.Autowired;
+        import org.springframework.core.env.Environment;
+        import org.springframework.beans.factory.annotation.Value;
+
+
 @Service
 public class StorageService {
 
     Logger log = LoggerFactory.getLogger(this.getClass().getName());
-    private final Path rootLocation = Paths.get("/opt/");
-    private final Path photosLocation = Paths.get("/opt/images");
-    private final Path videosLocation = Paths.get("/opt/videos");
 
+
+    private final Path rootLocation ;
+    private final Path photosLocation ;
+    private final Path videosLocation ;
+
+    @Autowired
+    public StorageService(@Value("${app.mla.kondepi.images.common}") String imgCommon,@Value("${app.mla.kondepi.images.lib}") String imgLib,@Value("${app.mla.kondepi.videos.lib}") String vidLib) {
+        this.rootLocation = Paths.get(imgCommon);
+        this.photosLocation = Paths.get(imgLib);
+        this.videosLocation = Paths.get(vidLib);
+    }
 
     public void store(MultipartFile file) {
         try {
