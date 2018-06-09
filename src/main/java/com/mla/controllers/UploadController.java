@@ -61,6 +61,49 @@ public class UploadController {
             return ResponseEntity.status(HttpStatus.EXPECTATION_FAILED).body(message);
         }
     }
+    @RequestMapping(method=RequestMethod.DELETE, value="/deletePhoto/{filename:.+}")
+    public ResponseEntity<String> handleDeletePhoto(@PathVariable("filename") String filename){
+        String message = "";
+        try {
+            storageService.deletePhoto(filename);
+            files.remove(filename);
+
+            message = "You successfully deleted " + filename + "!";
+            return ResponseEntity.status(HttpStatus.OK).body(message);
+        } catch (Exception e) {
+            message = "FAIL to delete " + filename + "!";
+            return ResponseEntity.status(HttpStatus.EXPECTATION_FAILED).body(message);
+        }
+    }
+    @RequestMapping(method=RequestMethod.DELETE, value="/deleteVideo/{filename:.+}")
+    public ResponseEntity<String> handleDeleteVideo(@PathVariable("filename") String filename){
+        String message = "";
+        try {
+            storageService.deleteVideo(filename);
+            files.remove(filename);
+
+            message = "You successfully deleted " + filename + "!";
+            return ResponseEntity.status(HttpStatus.OK).body(message);
+        } catch (Exception e) {
+            message = "FAIL to delete " + filename + "!";
+            return ResponseEntity.status(HttpStatus.EXPECTATION_FAILED).body(message);
+        }
+    }
+    @RequestMapping(method=RequestMethod.POST, value="/uploadAny")
+    public ResponseEntity<String> handleAnyUpload(@RequestParam("file") MultipartFile file) {
+        String message = "";
+        try {
+            storageService.storeAny(file);
+            files.add(file.getOriginalFilename());
+
+            message = "You successfully uploaded " + file.getOriginalFilename() + "!";
+            return ResponseEntity.status(HttpStatus.OK).body(message);
+        } catch (Exception e) {
+            message = "FAIL to upload " + file.getOriginalFilename() + "!";
+            System.out.println(e);
+            return ResponseEntity.status(HttpStatus.EXPECTATION_FAILED).body(message);
+        }
+    }
 
     @RequestMapping(method=RequestMethod.POST, value="/uploadVideos")
     public ResponseEntity<String> handleVideoUpload(@RequestParam("file") MultipartFile file) {
@@ -103,9 +146,21 @@ public class UploadController {
     public ResponseEntity<List<String>> getListFiles() {
         List<String> urls = storageService
                 .loadAll()
-                .map(path ->
+                    .map(path ->
                         MvcUriComponentsBuilder
                                 .fromMethodName(UploadController.class, "getPhoto", path.getFileName().toString())
+                                .build().encode().toString())
+                .collect(Collectors.toList());
+
+        return ResponseEntity.ok().body(urls);
+    }
+    @GetMapping("/getAny")
+    public ResponseEntity<List<String>> getAny() {
+        List<String> urls = storageService
+                .loadAnyAll()
+                .map(path ->
+                        MvcUriComponentsBuilder
+                                .fromMethodName(UploadController.class, "getAny", path.getFileName().toString())
                                 .build().encode().toString())
                 .collect(Collectors.toList());
 
@@ -138,6 +193,14 @@ public class UploadController {
     @ResponseBody
     public ResponseEntity<Resource> getVideo(@PathVariable String filename) {
         Resource file = storageService.loadVideo(filename);
+        return ResponseEntity.ok()
+                .header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=\"" + file.getFilename() + "\"")
+                .body(file);
+    }
+    @GetMapping("/any/{filename:.+}")
+    @ResponseBody
+    public ResponseEntity<Resource> getAny(@PathVariable String filename) {
+        Resource file = storageService.loadAny(filename);
         return ResponseEntity.ok()
                 .header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=\"" + file.getFilename() + "\"")
                 .body(file);
