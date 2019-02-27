@@ -68,6 +68,13 @@ public class StorageService {
             throw new RuntimeException("Image with the same name already exists !");
         }
     }
+    public void deletePhotoCommon(String file) {
+        try {
+            Files.delete(this.rootLocation.resolve(file));
+        } catch (Exception e) {
+            throw new RuntimeException("Image with the same name already exists !");
+        }
+    }
     public void deleteVideo(String file) {
         try {
             Files.delete(this.videosLocation.resolve(file));

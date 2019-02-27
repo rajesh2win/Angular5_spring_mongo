@@ -7,7 +7,7 @@ import org.springframework.data.mongodb.core.mapping.Document;
  * Created by rnallamothu on 4/15/18.
  */
 @Document(collection = "complaints")
-public class Complaints {
+public class Complaints1 {
     @Id
     String id;
     String topicName;
@@ -15,19 +15,19 @@ public class Complaints {
     String imageUrl;
     String phoneNumber;
 
-    public Complaints(String id, String topicName, String topicDetails,String phoneNumber) {
+    public Complaints1(String id, String topicName, String topicDetails, String phoneNumber) {
         this.id = id;
         this.topicName = topicName;
         this.topicDetails = topicDetails;
         this.phoneNumber = phoneNumber;
     }
 
-    public Complaints() {
+    public Complaints1() {
 
     }
 
     public String getPhoneNumber() {
-        return "";
+        return phoneNumber;
     }
 
     public void setPhoneNumber(String phoneNumber) {

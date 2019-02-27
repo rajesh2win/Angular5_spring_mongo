@@ -61,6 +61,21 @@ public class UploadController {
             return ResponseEntity.status(HttpStatus.EXPECTATION_FAILED).body(message);
         }
     }
+
+    @RequestMapping(method=RequestMethod.DELETE, value="/deletePhotoCommon/{filename:.+}")
+    public ResponseEntity<String> handleDeletePhotoCommon(@PathVariable("filename") String filename){
+        String message = "";
+        try {
+            storageService.deletePhotoCommon(filename);
+            files.remove(filename);
+
+            message = "You successfully deleted " + filename + "!";
+            return ResponseEntity.status(HttpStatus.OK).body(message);
+        } catch (Exception e) {
+            message = "FAIL to delete " + filename + "!";
+            return ResponseEntity.status(HttpStatus.EXPECTATION_FAILED).body(message);
+        }
+    }
     @RequestMapping(method=RequestMethod.DELETE, value="/deletePhoto/{filename:.+}")
     public ResponseEntity<String> handleDeletePhoto(@PathVariable("filename") String filename){
         String message = "";

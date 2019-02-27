@@ -4,7 +4,8 @@ package com.mla.controllers;
 import java.util.Optional;
 
 import com.mla.models.Complaints;
-
+import com.mla.models.Complaints1;
+import com.mla.repositories.ComplaintsRepository1;
 import com.mla.repositories.ComplaintsRepository;
 import com.mla.repositories.NewsTopicRepository;
 import com.mla.repositories.TopicRepository;
@@ -28,10 +29,16 @@ import java.util.Optional;
 public class ComplaintsController {
     @Autowired
     ComplaintsRepository topicRepository;
+    @Autowired
+    ComplaintsRepository1 topicRepository1;
 
     @RequestMapping(method = RequestMethod.GET, value = "/complaints")
     public Iterable<Complaints> topic() {
         return topicRepository.findAll();
+    }
+    @RequestMapping(method = RequestMethod.GET, value = "/complaintsall")
+    public Iterable<Complaints1> topic1() {
+        return topicRepository1.findAll();
     }
 
     @RequestMapping(method = RequestMethod.POST, value = "/complaints")
@@ -45,6 +52,10 @@ public class ComplaintsController {
         return topicRepository.findById(id);
     }
 
+    @RequestMapping(method = RequestMethod.POST, value = "/complaintsidall/{id}")
+    public Optional<Complaints1> showall(@PathVariable String id) {
+        return topicRepository1.findById(id);
+    }
 
     @RequestMapping(method = RequestMethod.PUT, value = "/complaints/{id}")
     public Complaints update(@PathVariable String id, @RequestBody Complaints topic) {
