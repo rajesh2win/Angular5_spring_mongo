@@ -104,6 +104,20 @@ public class UploadController {
             return ResponseEntity.status(HttpStatus.EXPECTATION_FAILED).body(message);
         }
     }
+    @RequestMapping(method=RequestMethod.DELETE, value="/deleteAudio/{filename:.+}")
+    public ResponseEntity<String> handleDeleteAudio(@PathVariable("filename") String filename){
+        String message = "";
+        try {
+            storageService.deleteAudio(filename);
+            files.remove(filename);
+
+            message = "You successfully deleted " + filename + "!";
+            return ResponseEntity.status(HttpStatus.OK).body(message);
+        } catch (Exception e) {
+            message = "FAIL to delete " + filename + "!";
+            return ResponseEntity.status(HttpStatus.EXPECTATION_FAILED).body(message);
+        }
+    }
     @RequestMapping(method=RequestMethod.POST, value="/uploadAny")
     public ResponseEntity<String> handleAnyUpload(@RequestParam("file") MultipartFile file) {
         String message = "";
@@ -125,6 +139,22 @@ public class UploadController {
         String message = "";
         try {
             storageService.storeVideos(file);
+            files.add(file.getOriginalFilename());
+
+            message = "You successfully uploaded " + file.getOriginalFilename() + "!";
+            return ResponseEntity.status(HttpStatus.OK).body(message);
+        } catch (Exception e) {
+            message = "FAIL to upload " + file.getOriginalFilename() + "!";
+            System.out.println(e);
+            return ResponseEntity.status(HttpStatus.EXPECTATION_FAILED).body(message);
+        }
+    }
+
+    @RequestMapping(method=RequestMethod.POST, value="/uploadAudios")
+    public ResponseEntity<String> handleAudioUpload(@RequestParam("file") MultipartFile file) {
+        String message = "";
+        try {
+            storageService.storeAudios(file);
             files.add(file.getOriginalFilename());
 
             message = "You successfully uploaded " + file.getOriginalFilename() + "!";
@@ -195,6 +225,19 @@ public class UploadController {
         return ResponseEntity.ok().body(urls);
     }
 
+    @GetMapping("/getallaudios")
+    public ResponseEntity<List<String>> getAudioFiles() {
+        List<String> urls = storageService
+                .loadAllAudios()
+                .map(path ->
+                        MvcUriComponentsBuilder
+                                .fromMethodName(UploadController.class, "getAudio", path.getFileName().toString())
+                                .build().encode().toString())
+                .collect(Collectors.toList());
+
+        return ResponseEntity.ok().body(urls);
+    }
+
     @GetMapping("/photos/{filename:.+}")
     @ResponseBody
     public ResponseEntity<Resource> getPhoto(@PathVariable String filename) {
@@ -208,6 +251,14 @@ public class UploadController {
     @ResponseBody
     public ResponseEntity<Resource> getVideo(@PathVariable String filename) {
         Resource file = storageService.loadVideo(filename);
+        return ResponseEntity.ok()
+                .header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=\"" + file.getFilename() + "\"")
+                .body(file);
+    }
+    @GetMapping("/audios/{filename:.+}")
+    @ResponseBody
+    public ResponseEntity<Resource> getAudio(@PathVariable String filename) {
+        Resource file = storageService.loadAudio(filename);
         return ResponseEntity.ok()
                 .header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=\"" + file.getFilename() + "\"")
                 .body(file);

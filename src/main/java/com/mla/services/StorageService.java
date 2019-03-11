@@ -32,17 +32,20 @@ public class StorageService {
     private final Path rootLocation ;
     private final Path photosLocation ;
     private final Path videosLocation ;
+    private final Path audiosLocation ;
     private final Path shareLocation;
 
     @Autowired
     public StorageService(@Value("${app.mla.darsi.images.common}") String imgCommon,
                           @Value("${app.mla.darsi.images.lib}") String imgLib,
                           @Value("${app.mla.darsi.videos.lib}") String vidLib,
-                          @Value("${app.mla.common}") String shareLib) {
+                          @Value("${app.mla.common}") String shareLib,
+                          @Value("${app.mla.darsi.audios.lib}") String audios) {
         this.rootLocation = Paths.get(imgCommon);
         this.photosLocation = Paths.get(imgLib);
         this.videosLocation = Paths.get(vidLib);
         this.shareLocation = Paths.get(shareLib);
+        this.audiosLocation = Paths.get(audios);
 
     }
 
@@ -82,6 +85,13 @@ public class StorageService {
             throw new RuntimeException("Video with the same name already exists !");
         }
     }
+    public void deleteAudio(String file) {
+        try {
+            Files.delete(this.audiosLocation.resolve(file));
+        } catch (Exception e) {
+            throw new RuntimeException("Audio with the same name already exists !");
+        }
+    }
     public void storeAny(MultipartFile file) {
         try {
             Files.copy(file.getInputStream(), this.shareLocation.resolve(file.getOriginalFilename()));
@@ -93,6 +103,14 @@ public class StorageService {
     public void storeVideos(MultipartFile file) {
         try {
             Files.copy(file.getInputStream(), this.videosLocation.resolve(file.getOriginalFilename()));
+        } catch (Exception e) {
+            throw new RuntimeException("Image with the same name already exists !");
+        }
+    }
+
+    public void storeAudios(MultipartFile file) {
+        try {
+            Files.copy(file.getInputStream(), this.audiosLocation.resolve(file.getOriginalFilename()));
         } catch (Exception e) {
             throw new RuntimeException("Image with the same name already exists !");
         }
@@ -127,6 +145,18 @@ public class StorageService {
                     .filter(path -> !path.equals(this.videosLocation))
                     .filter(path -> !path.getFileName().toString().startsWith("."))
                     .map(path -> this.videosLocation.relativize(path));
+        } catch (IOException e) {
+            //throw new StorageException("Failed to read stored files", e);
+        }
+        return null;
+    }
+
+    public Stream<Path> loadAllAudios() {
+        try {
+            return Files.walk(this.audiosLocation, 1)
+                    .filter(path -> !path.equals(this.audiosLocation))
+                    .filter(path -> !path.getFileName().toString().startsWith("."))
+                    .map(path -> this.audiosLocation.relativize(path));
         } catch (IOException e) {
             //throw new StorageException("Failed to read stored files", e);
         }
@@ -177,6 +207,20 @@ public class StorageService {
     public Resource loadVideo(String filename) {
         try {
             Path file = videosLocation.resolve(filename);
+            Resource resource = new UrlResource(file.toUri());
+            if (resource.exists() || resource.isReadable()) {
+                return resource;
+            } else {
+                throw new RuntimeException("FAIL!");
+            }
+        } catch (MalformedURLException e) {
+            throw new RuntimeException("FAIL!");
+        }
+    }
+
+    public Resource loadAudio(String filename) {
+        try {
+            Path file = audiosLocation.resolve(filename);
             Resource resource = new UrlResource(file.toUri());
             if (resource.exists() || resource.isReadable()) {
                 return resource;
